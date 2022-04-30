@@ -11,8 +11,8 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
-    if "sexo" in message.content:
-        await message.channel.send(f"É disso que o povo gosta {message.author.name}")
+    if "bom dia bot" in message.content:
+        await message.channel.send(f"Bom dia {message.author.name}")
 
     await bot.process_commands(message)
 
