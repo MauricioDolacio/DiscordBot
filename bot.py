@@ -1,12 +1,16 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import os
+from itertools import cycle
+
 
 client = commands.Bot(command_prefix = "&")
+status = cycle(['Esqueceu de responder dnvkk', 'Layla Morre', 'Chora fi', 'Olha ele ai'])
+
 
 @client.event
 async def on_ready():
-    await client.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game('Babigi'))
+    change_status.start()
     print('Bot is online')
 
 @client.command()
@@ -34,6 +38,12 @@ for filename in os.listdir('./cogs'):
 # async def on_member_remove(member):
 #     print(f'{member} Saiu do servidor :(')
 
+@tasks.loop(seconds=10)
+async def change_status():
+    await client.change_presence(activity=discord.Game(next(status)))
+
+
+#Open Token
 with open("token.0", "r", encoding="utf-8") as configfile:
     token = configfile.read()
 
