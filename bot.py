@@ -3,30 +3,29 @@ import discord
 from discord.ext import commands, tasks
 import os
 from itertools import cycle
-
+import random
 
 client = commands.Bot(command_prefix = "&")
 status = cycle(['Esqueceu de responder dnvkk', 'Layla Morre', 'Chora fi', 'Olha ele ai'])
+songs = ['./source/olhae.mp3', './source/rapaz.mp3', './source/amogus.mp3', './source/atumalaca.mp3', './source/elegosta.mp3', './source/irra.mp3', './source/patrao.mp3', './source/tome.mp3', './source/tururu.mp3']
 
 @client.event
 async def on_voice_state_update(member, before, after):
   if not before.channel and after.channel:
-
     if member != client.user:
         channel = member.voice.channel
+        voice = await channel.connect()
 
         try:
-            voice = await channel.connect()
+            number = random.randint(0, len(songs)-1)
+            source = discord.FFmpegPCMAudio(songs[number])
+            voice.play(source)
         except discord.errors.ClientException:
-            voice = [v for v in channel.voice_clients if v.channel.guild == channel.guild][0]
-            if voice.channel != voice:
                 await voice.disconnect()
                 voice = await channel.connect()
-        
-        voice.play(discord.FFmpegPCMAudio('./source/rapaz.mp3'))
 
         while True:
-            await asyncio.sleep(1.5)
+            await asyncio.sleep(2)
             if voice.is_playing() == False:
                 await voice.disconnect()
                 break
@@ -38,6 +37,8 @@ async def on_voice_state_update(member, before, after):
 async def on_ready():
     change_status.start()
     print('Bot is online')
+
+
 
 @client.command()
 async def join(ctx):
@@ -66,17 +67,11 @@ for filename in os.listdir('./cogs'):
         client.load_extension(f'cogs.{filename[:-3]}')
 
 
-# @client.event
-# async def on_member_join(member):
-#     print(f'{member} Entrou no servidor!')
-
-# @client.event
-# async def on_member_remove(member):
-#     print(f'{member} Saiu do servidor :(')
 
 @tasks.loop(seconds=10)
 async def change_status():
     await client.change_presence(activity=discord.Game(next(status)))
+
 
 
 #Open Token
