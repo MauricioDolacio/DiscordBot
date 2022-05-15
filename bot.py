@@ -16,22 +16,14 @@ async def on_voice_state_update(member, before, after):
         channel = member.voice.channel
         voice = await channel.connect()
 
-        try:
-            number = random.randint(0, len(songs)-1)
-            source = discord.FFmpegPCMAudio(songs[number])
-            voice.play(source)
-        except discord.errors.ClientException:
-                await voice.disconnect()
-                voice = await channel.connect()
+        number = random.randint(0, len(songs)-1)
+        voice.play(discord.FFmpegPCMAudio(songs[number]))
 
         while True:
             await asyncio.sleep(2)
             if voice.is_playing() == False:
                 await voice.disconnect()
                 break
-        
-        voice.stop()
-        await voice.disconnect()
 
 @client.event
 async def on_ready():
